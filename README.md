@@ -14,7 +14,8 @@ The benchmark records:
 
 ## Requirements
 
-- JDK 17 or newer is recommended.
+- JDK 21 is recommended.
+- JDK 17 or newer should also work.
 - No external Java libraries are required.
 
 ## Compile
@@ -78,4 +79,3 @@ git remote add origin <repo-url>
 git branch -M main
 git push -u origin main
 ```
-
