@@ -54,6 +54,12 @@ Parallel:
 java -cp out ceng479.mandelbrot.MandelbrotApp render --mode=parallel --width=1920 --height=1080 --maxIter=1000 --threads=8 --tileSize=64 --output=results/images/parallel.png
 ```
 
+## Run the GUI Demo
+
+```bash
+java -cp out ceng479.mandelbrot.MandelbrotGuiApp
+```
+
 ## Run Benchmarks
 
 Quick benchmark for testing:

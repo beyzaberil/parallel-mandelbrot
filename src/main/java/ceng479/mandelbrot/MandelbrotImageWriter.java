@@ -11,6 +11,17 @@ public final class MandelbrotImageWriter {
     }
 
     public static void writePng(MandelbrotConfig config, int[] iterations, String outputPath) throws IOException {
+        BufferedImage image = toBufferedImage(config, iterations);
+
+        File output = new File(outputPath);
+        File parent = output.getParentFile();
+        if (parent != null) {
+            parent.mkdirs();
+        }
+        ImageIO.write(image, "png", output);
+    }
+
+    public static BufferedImage toBufferedImage(MandelbrotConfig config, int[] iterations) {
         BufferedImage image = new BufferedImage(config.getWidth(), config.getHeight(), BufferedImage.TYPE_INT_RGB);
 
         for (int y = 0; y < config.getHeight(); y++) {
@@ -21,12 +32,7 @@ public final class MandelbrotImageWriter {
             }
         }
 
-        File output = new File(outputPath);
-        File parent = output.getParentFile();
-        if (parent != null) {
-            parent.mkdirs();
-        }
-        ImageIO.write(image, "png", output);
+        return image;
     }
 
     private static int colorFor(int iteration, int maxIterations) {
