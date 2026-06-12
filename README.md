@@ -86,6 +86,10 @@ java -cp out ceng479.mandelbrot.MandelbrotApp graphs --input=results/csv/benchma
 
 Charts are written under `results/graphs/`.
 
+## Report Artifacts
+
+Final Apple M3 benchmark data, graphs, and a short result summary are stored under `report/`.
+
 ## Suggested GitHub Workflow
 
 Create a private GitHub repository, invite your teammate as a collaborator, then connect this local project to the remote:
