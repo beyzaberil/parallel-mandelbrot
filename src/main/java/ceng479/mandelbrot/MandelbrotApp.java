@@ -8,6 +8,8 @@ public final class MandelbrotApp {
     }
 
     public static void main(String[] args) throws Exception {
+        System.setProperty("java.awt.headless", "true");
+
         if (args.length == 0 || "help".equalsIgnoreCase(args[0]) || "--help".equalsIgnoreCase(args[0])) {
             printHelp();
             return;
@@ -22,6 +24,9 @@ public final class MandelbrotApp {
                 break;
             case "benchmark":
                 benchmark(CliOptions.parse(args, 1));
+                break;
+            case "graphs":
+                graphs(CliOptions.parse(args, 1));
                 break;
             default:
                 throw new IllegalArgumentException("Unknown command: " + args[0]);
@@ -72,6 +77,20 @@ public final class MandelbrotApp {
         System.out.println("Benchmark CSV written to " + csvPath);
     }
 
+    private static void graphs(CliOptions options) throws IOException {
+        String input = options.getString("input", "latest");
+        String outputDirectory = options.getString("outputDir", "results/graphs");
+
+        String resolvedInput = "latest".equalsIgnoreCase(input)
+                ? BenchmarkGraphGenerator.latestCsvPath()
+                : input;
+        System.out.println("Generating graphs from " + resolvedInput);
+
+        for (String output : BenchmarkGraphGenerator.generate(input, outputDirectory)) {
+            System.out.println("Graph written to " + output);
+        }
+    }
+
     private static MandelbrotRenderer rendererFor(String mode, int threads) {
         if ("sequential".equalsIgnoreCase(mode)) {
             return new SequentialMandelbrotRenderer();
@@ -97,5 +116,6 @@ public final class MandelbrotApp {
         System.out.println("  verify");
         System.out.println("  render --mode=parallel --width=1920 --height=1080 --maxIter=1000 --threads=8 --tileSize=64 --output=results/images/parallel.png");
         System.out.println("  benchmark --preset=quick --threads=1,2,4,8 --repeats=3 --warmups=1 --tileSize=64");
+        System.out.println("  graphs --input=latest --outputDir=results/graphs");
     }
 }

@@ -70,6 +70,22 @@ java -cp out ceng479.mandelbrot.MandelbrotApp benchmark --preset=full --threads=
 
 CSV files are written under `results/csv/`.
 
+## Generate Graphs
+
+Create PNG charts from the latest benchmark CSV:
+
+```bash
+java -cp out ceng479.mandelbrot.MandelbrotApp graphs --input=latest
+```
+
+Or specify a CSV manually:
+
+```bash
+java -cp out ceng479.mandelbrot.MandelbrotApp graphs --input=results/csv/benchmark-YYYYMMDD-HHMMSS.csv
+```
+
+Charts are written under `results/graphs/`.
+
 ## Suggested GitHub Workflow
 
 Create a private GitHub repository, invite your teammate as a collaborator, then connect this local project to the remote:
