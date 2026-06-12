@@ -1,5 +1,7 @@
 # Benchmark Summary - Apple M3
 
+This file summarizes the original sequential vs dynamic parallel benchmark. For the later static row-band vs dynamic tile-based comparison, see `report/static-vs-dynamic-summary.md`.
+
 ## Experimental Setup
 
 - Machine: Apple M3
