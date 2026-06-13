@@ -2,7 +2,7 @@
 
 Project topic: **Dynamic Parallelization of Mandelbrot Set Fractal Generation Using Java Threads**
 
-This package is based on the repository state inspected at commit `9744884` (`Add benchmark variance and chunk-size report artifacts`). It only uses information visible in the repository, generated benchmark files, source code, and local verification commands. When information is not available, it is marked as **MISSING**.
+This package is based on the source code, benchmark data, and report artifacts inspected at commit `9744884` (`Add benchmark variance and chunk-size report artifacts`). The package itself is committed after that baseline; use `git log -1 --oneline` to see the latest repository commit. It only uses information visible in the repository, generated benchmark files, source code, and local verification commands. When information is not available, it is marked as **MISSING**.
 
 ## A. Repository Overview
 
@@ -11,7 +11,8 @@ This package is based on the repository state inspected at commit `9744884` (`Ad
 | Project name | Dynamic Parallel Mandelbrot Generation |
 | Main objective | Implement and compare sequential Mandelbrot rendering, static row-band parallel rendering, and dynamic tile-based parallel rendering using Java threads. |
 | GitHub repository | `https://github.com/beyzaberil/parallel-mandelbrot.git` |
-| Current commit | `9744884 Add benchmark variance and chunk-size report artifacts` |
+| Analyzed source/results commit | `9744884 Add benchmark variance and chunk-size report artifacts` |
+| Latest commit command | `git log -1 --oneline` |
 | Main language | Java |
 | Java/JDK used locally | Oracle JDK `21.0.11`, `javac 21.0.11` |
 | Build system | No Maven/Gradle. Compilation is done with `javac` through `scripts/compile.sh`. |
@@ -742,4 +743,3 @@ Recommended wording for the benchmark methodology:
 Recommended wording for the dynamic scheduling claim:
 
 > The implementation uses Java's built-in work-stealing executor through `Executors.newWorkStealingPool(threadCount)`. Therefore, the project relies on Java work-stealing support rather than implementing a custom work-stealing queue manually.
-
