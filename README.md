@@ -90,6 +90,14 @@ java -cp out ceng479.mandelbrot.MandelbrotApp benchmark --preset=full --threads=
 
 CSV files are written under `results/csv/`.
 
+## Run Tile-Size Sweep
+
+```bash
+java -cp out ceng479.mandelbrot.MandelbrotApp tile-sweep --width=2000 --height=2000 --maxIter=1000 --threads=8 --tileSizes=16,32,64,128,256 --repeats=3 --warmups=1
+```
+
+The tile-size sweep measures the dynamic renderer with different tile sizes and writes a CSV file under `results/csv/`.
+
 ## Generate Graphs
 
 Create PNG charts from the latest benchmark CSV:

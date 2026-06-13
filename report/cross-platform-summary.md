@@ -33,3 +33,10 @@ The largest benchmark case is 4000x4000 resolution with 1000 maximum iterations.
 - Windows version
 - Java/JDK version used on Windows
 - Confirmation of benchmark command, warm-up count, and repeat count
+
+## Additional Artifacts Added Later
+
+- Example Mandelbrot image: `report/assets/mandelbrot-sample.png`
+- Dynamic scheduling architecture diagram: `report/assets/dynamic-task-scheduling.mmd`
+- Tile-size sweep data: `report/data/m3-tile-size-sweep.csv`
+- Tile-size sweep graph: `report/assets/tile-size-sweep-2000x2000-iter1000.svg`

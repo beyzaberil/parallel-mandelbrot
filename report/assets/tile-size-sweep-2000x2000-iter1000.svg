@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="560" viewBox="0 0 960 560" role="img" aria-label="Tile-size sweep chart">
+  <rect width="960" height="560" fill="#ffffff"/>
+  <text x="480" y="42" text-anchor="middle" font-family="Arial, sans-serif" font-size="26" font-weight="700" fill="#222">Tile-Size Sweep - 2000x2000, maxIter=1000, 8 Threads</text>
+  <line x1="100" y1="420" x2="880" y2="420" stroke="#222" stroke-width="2"/>
+  <line x1="100" y1="80" x2="100" y2="420" stroke="#222" stroke-width="2"/>
+  <g font-family="Arial, sans-serif" font-size="14" fill="#444">
+    <line x1="100" y1="420" x2="880" y2="420" stroke="#e5e9ef"/>
+    <line x1="100" y1="340" x2="880" y2="340" stroke="#e5e9ef"/>
+    <line x1="100" y1="260" x2="880" y2="260" stroke="#e5e9ef"/>
+    <line x1="100" y1="180" x2="880" y2="180" stroke="#e5e9ef"/>
+    <line x1="100" y1="100" x2="880" y2="100" stroke="#e5e9ef"/>
+    <text x="72" y="425" text-anchor="end">280</text>
+    <text x="72" y="345" text-anchor="end">305</text>
+    <text x="72" y="265" text-anchor="end">330</text>
+    <text x="72" y="185" text-anchor="end">355</text>
+    <text x="72" y="105" text-anchor="end">380</text>
+  </g>
+  <g font-family="Arial, sans-serif" font-size="14" fill="#444">
+    <line x1="120" y1="420" x2="120" y2="427" stroke="#222"/>
+    <line x1="300" y1="420" x2="300" y2="427" stroke="#222"/>
+    <line x1="480" y1="420" x2="480" y2="427" stroke="#222"/>
+    <line x1="660" y1="420" x2="660" y2="427" stroke="#222"/>
+    <line x1="840" y1="420" x2="840" y2="427" stroke="#222"/>
+    <text x="120" y="450" text-anchor="middle">16</text>
+    <text x="300" y="450" text-anchor="middle">32</text>
+    <text x="480" y="450" text-anchor="middle">64</text>
+    <text x="660" y="450" text-anchor="middle">128</text>
+    <text x="840" y="450" text-anchor="middle">256</text>
+  </g>
+  <text x="490" y="505" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#222">Tile Size (pixels)</text>
+  <text x="-250" y="32" transform="rotate(-90)" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#222">Average Time (ms)</text>
+  <polyline fill="none" stroke="#00796b" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"
+            points="120,328.1 300,373.2 480,326.7 660,295.1 840,155.1"/>
+  <g fill="#00796b" stroke="#ffffff" stroke-width="2">
+    <circle cx="120" cy="328.1" r="6"/>
+    <circle cx="300" cy="373.2" r="6"/>
+    <circle cx="480" cy="326.7" r="6"/>
+    <circle cx="660" cy="295.1" r="6"/>
+    <circle cx="840" cy="155.1" r="6"/>
+  </g>
+  <g font-family="Arial, sans-serif" font-size="13" fill="#222">
+    <text x="120" y="314" text-anchor="middle">308.714</text>
+    <text x="300" y="359" text-anchor="middle">294.637</text>
+    <text x="480" y="313" text-anchor="middle">309.164</text>
+    <text x="660" y="281" text-anchor="middle">319.027</text>
+    <text x="840" y="141" text-anchor="middle">362.770</text>
+  </g>
+  <rect x="640" y="82" width="220" height="44" fill="#ffffff" opacity="0.92" stroke="#cccccc"/>
+  <line x1="660" y1="104" x2="715" y2="104" stroke="#00796b" stroke-width="4"/>
+  <circle cx="687" cy="104" r="5" fill="#00796b"/>
+  <text x="728" y="109" font-family="Arial, sans-serif" font-size="15" fill="#222">Dynamic renderer</text>
+</svg>

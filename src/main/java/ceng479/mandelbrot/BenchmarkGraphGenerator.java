@@ -66,7 +66,7 @@ public final class BenchmarkGraphGenerator {
         }
 
         File directory = new File("results/csv");
-        File[] files = directory.listFiles((dir, name) -> name.endsWith(".csv"));
+        File[] files = directory.listFiles((dir, name) -> name.startsWith("benchmark-") && name.endsWith(".csv"));
         if (files == null || files.length == 0) {
             throw new IllegalArgumentException("No benchmark CSV files found in results/csv.");
         }

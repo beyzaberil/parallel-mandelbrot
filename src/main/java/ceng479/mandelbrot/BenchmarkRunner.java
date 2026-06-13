@@ -40,7 +40,8 @@ public final class BenchmarkRunner {
                     benchmarkCase.maxIterations,
                     tileSize);
 
-            double sequentialMs = averageRenderTimeMs(new SequentialMandelbrotRenderer(), config);
+            TimingStats sequentialStats = TimingStats.measure(new SequentialMandelbrotRenderer(), config, warmups, repeats);
+            double sequentialMs = sequentialStats.getAverageTimeMs();
             results.add(new BenchmarkResult(
                     preset,
                     "sequential",
@@ -51,14 +52,20 @@ public final class BenchmarkRunner {
                     0,
                     sequentialMs,
                     1.0,
-                    1.0));
+                    1.0,
+                    sequentialStats.getMinTimeMs(),
+                    sequentialStats.getMaxTimeMs(),
+                    sequentialStats.getStdDevTimeMs()));
 
             System.out.printf(Locale.US,
-                    "Sequential %dx%d maxIter=%d: %.3f ms%n",
+                    "Sequential %dx%d maxIter=%d: avg=%.3f ms, min=%.3f, max=%.3f, std=%.3f%n",
                     config.getWidth(),
                     config.getHeight(),
                     config.getMaxIterations(),
-                    sequentialMs);
+                    sequentialStats.getAverageTimeMs(),
+                    sequentialStats.getMinTimeMs(),
+                    sequentialStats.getMaxTimeMs(),
+                    sequentialStats.getStdDevTimeMs());
 
             for (int threadCount : threadCounts) {
                 benchmarkParallelMode(
@@ -88,13 +95,14 @@ public final class BenchmarkRunner {
             int threadCount,
             String mode,
             MandelbrotRenderer renderer) throws InterruptedException {
-        double parallelMs;
+        TimingStats parallelStats;
         try {
-            parallelMs = averageRenderTimeMs(renderer, config);
+            parallelStats = TimingStats.measure(renderer, config, warmups, repeats);
         } finally {
             closeRenderer(renderer);
         }
 
+        double parallelMs = parallelStats.getAverageTimeMs();
         double speedup = sequentialMs / parallelMs;
         double efficiency = speedup / threadCount;
 
@@ -108,16 +116,22 @@ public final class BenchmarkRunner {
                 config.getTileSize(),
                 parallelMs,
                 speedup,
-                efficiency));
+                efficiency,
+                parallelStats.getMinTimeMs(),
+                parallelStats.getMaxTimeMs(),
+                parallelStats.getStdDevTimeMs()));
 
         System.out.printf(Locale.US,
-                "%-9s %dx%d maxIter=%d threads=%d: %.3f ms, speedup=%.4f, efficiency=%.4f%n",
+                "%-9s %dx%d maxIter=%d threads=%d: avg=%.3f ms, min=%.3f, max=%.3f, std=%.3f, speedup=%.4f, efficiency=%.4f%n",
                 capitalize(mode),
                 config.getWidth(),
                 config.getHeight(),
                 config.getMaxIterations(),
                 threadCount,
-                parallelMs,
+                parallelStats.getAverageTimeMs(),
+                parallelStats.getMinTimeMs(),
+                parallelStats.getMaxTimeMs(),
+                parallelStats.getStdDevTimeMs(),
                 speedup,
                 efficiency);
     }
@@ -132,23 +146,6 @@ public final class BenchmarkRunner {
 
     private static String capitalize(String value) {
         return value.substring(0, 1).toUpperCase(Locale.US) + value.substring(1);
-    }
-
-    private double averageRenderTimeMs(MandelbrotRenderer renderer, MandelbrotConfig config)
-            throws InterruptedException {
-        for (int i = 0; i < warmups; i++) {
-            renderer.render(config);
-        }
-
-        long totalNs = 0L;
-        for (int i = 0; i < repeats; i++) {
-            long start = System.nanoTime();
-            renderer.render(config);
-            long end = System.nanoTime();
-            totalNs += end - start;
-        }
-
-        return totalNs / 1_000_000.0 / repeats;
     }
 
     private String writeCsv(List<BenchmarkResult> results) throws IOException {

@@ -16,7 +16,7 @@ This file summarizes the original sequential vs dynamic parallel benchmark. For 
 java -cp out ceng479.mandelbrot.MandelbrotApp benchmark --preset=full --threads=1,2,4,8 --repeats=3 --warmups=1 --tileSize=64
 ```
 
-The benchmark excludes image writing from the measured render time. Each reported value is the average of three measured runs after one warm-up run.
+The benchmark excludes image writing from the measured render time. Each reported value is the average of three measured runs after one warm-up run. Later benchmark runs also include minimum, maximum, and standard deviation columns in the generated CSV output.
 
 ## Benchmark Matrix
 

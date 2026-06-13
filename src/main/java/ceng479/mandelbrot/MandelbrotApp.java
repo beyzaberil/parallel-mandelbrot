@@ -28,6 +28,9 @@ public final class MandelbrotApp {
             case "graphs":
                 graphs(CliOptions.parse(args, 1));
                 break;
+            case "tile-sweep":
+                tileSweep(CliOptions.parse(args, 1));
+                break;
             default:
                 throw new IllegalArgumentException("Unknown command: " + args[0]);
         }
@@ -89,6 +92,27 @@ public final class MandelbrotApp {
         }
     }
 
+    private static void tileSweep(CliOptions options) throws IOException, InterruptedException {
+        int width = options.getInt("width", 2000);
+        int height = options.getInt("height", 2000);
+        int maxIterations = options.getInt("maxIter", 1000);
+        int threads = options.getInt("threads", Runtime.getRuntime().availableProcessors());
+        int[] tileSizes = options.getIntList("tileSizes", new int[]{16, 32, 64, 128, 256});
+        int repeats = options.getInt("repeats", 3);
+        int warmups = options.getInt("warmups", 1);
+
+        TileSizeSweepRunner runner = new TileSizeSweepRunner(
+                width,
+                height,
+                maxIterations,
+                threads,
+                tileSizes,
+                repeats,
+                warmups);
+        String csvPath = runner.run();
+        System.out.println("Tile-size sweep CSV written to " + csvPath);
+    }
+
     private static MandelbrotRenderer rendererFor(String mode, int threads) {
         if ("sequential".equalsIgnoreCase(mode)) {
             return new SequentialMandelbrotRenderer();
@@ -129,5 +153,6 @@ public final class MandelbrotApp {
         System.out.println("  render --mode=static --width=1920 --height=1080 --maxIter=1000 --threads=8 --tileSize=64 --output=results/images/static.png");
         System.out.println("  benchmark --preset=quick --threads=1,2,4,8 --repeats=3 --warmups=1 --tileSize=64");
         System.out.println("  graphs --input=latest --outputDir=results/graphs");
+        System.out.println("  tile-sweep --width=2000 --height=2000 --maxIter=1000 --threads=8 --tileSizes=16,32,64,128 --repeats=3 --warmups=1");
     }
 }

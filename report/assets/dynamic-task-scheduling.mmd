@@ -1,0 +1,14 @@
+flowchart LR
+    A["Mandelbrot image\nwidth x height"] --> B["Split image into\n64x64 tiles"]
+    B --> C["Create Callable<Void>\ntile tasks"]
+    C --> D["Java work-stealing pool\nExecutors.newWorkStealingPool(threadCount)"]
+    D --> E1["Worker thread 1"]
+    D --> E2["Worker thread 2"]
+    D --> E3["Worker thread ..."]
+    D --> E4["Worker thread N"]
+    E1 --> F["Compute independent pixels\nz(n+1)=z(n)^2+c"]
+    E2 --> F
+    E3 --> F
+    E4 --> F
+    F --> G["Write iteration counts\nto disjoint output array regions"]
+    G --> H["Convert iteration array\nto PNG image / benchmark result"]

@@ -61,6 +61,9 @@ Dynamic tile scheduling reduces this imbalance by creating many smaller tasks. W
 
 - CSV data: `report/data/m3-static-dynamic-benchmark.csv`
 - Graphs: `report/assets/graphs-static-dynamic-m3/`
+- Example Mandelbrot image: `report/assets/mandelbrot-sample.png`
+- Dynamic scheduling diagram: `report/assets/dynamic-task-scheduling.mmd`
+- Tile-size sweep summary: `report/tile-size-sweep-summary.md`
 
 Recommended figures for the final report:
 
