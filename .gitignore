@@ -1,10 +1,7 @@
 out/
 *.class
 
-results/
-results/csv/*.csv
-results/images/*.png
-results/graphs/*.png
+
 
 .DS_Store
 .idea/
