@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="620" viewBox="0 0 1200 620" role="img" aria-labelledby="title desc">
+  <title id="title">Dynamic tile-based Mandelbrot task scheduling</title>
+  <desc id="desc">Architecture diagram showing how a Mandelbrot image is split into tiles, submitted as tasks, scheduled by a Java work-stealing pool, computed by worker threads, and written into the output buffer.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#2f3a4a"/>
+    </marker>
+    <style>
+      .bg { fill: #f7f8fb; }
+      .panel { fill: #ffffff; stroke: #c7cfdb; stroke-width: 2; rx: 10; }
+      .accent { fill: #e8f4ff; stroke: #4f8fcf; stroke-width: 2; rx: 10; }
+      .queue { fill: #fff4df; stroke: #d39633; stroke-width: 2; rx: 10; }
+      .worker { fill: #ecf8ef; stroke: #4f9d66; stroke-width: 2; rx: 10; }
+      .output { fill: #f3ecff; stroke: #805fc7; stroke-width: 2; rx: 10; }
+      .title { font: 700 28px Arial, sans-serif; fill: #19202a; }
+      .label { font: 700 20px Arial, sans-serif; fill: #19202a; }
+      .small { font: 15px Arial, sans-serif; fill: #435064; }
+      .tiny { font: 13px Arial, sans-serif; fill: #435064; }
+      .arrow { stroke: #2f3a4a; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+      .tile { fill: #d8ebff; stroke: #4f8fcf; stroke-width: 1; }
+    </style>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1200" height="620"/>
+  <text class="title" x="60" y="58">Dynamic Parallel Mandelbrot Rendering</text>
+  <text class="small" x="60" y="88">The image is divided into independent tiles; workers dynamically take tasks and write disjoint pixels.</text>
+
+  <rect class="accent" x="60" y="150" width="210" height="150"/>
+  <text class="label" x="90" y="185">Input Image</text>
+  <text class="small" x="90" y="212">width x height</text>
+  <text class="small" x="90" y="238">maxIterations</text>
+  <text class="small" x="90" y="264">complex plane range</text>
+
+  <path class="arrow" d="M280 225 H360"/>
+
+  <rect class="panel" x="370" y="130" width="230" height="190"/>
+  <text class="label" x="405" y="166">Tile Decomposition</text>
+  <text class="small" x="405" y="192">Default tile size: 64x64</text>
+  <g transform="translate(430 215)">
+    <rect class="tile" x="0" y="0" width="28" height="28"/>
+    <rect class="tile" x="30" y="0" width="28" height="28"/>
+    <rect class="tile" x="60" y="0" width="28" height="28"/>
+    <rect class="tile" x="90" y="0" width="28" height="28"/>
+    <rect class="tile" x="0" y="30" width="28" height="28"/>
+    <rect class="tile" x="30" y="30" width="28" height="28"/>
+    <rect class="tile" x="60" y="30" width="28" height="28"/>
+    <rect class="tile" x="90" y="30" width="28" height="28"/>
+  </g>
+  <text class="tiny" x="405" y="300">Each tile becomes an independent task.</text>
+
+  <path class="arrow" d="M610 225 H690"/>
+
+  <rect class="queue" x="700" y="130" width="230" height="190"/>
+  <text class="label" x="735" y="166">Task Pool</text>
+  <text class="small" x="735" y="192">ExecutorService</text>
+  <text class="small" x="735" y="218">Work-stealing pool</text>
+  <text class="small" x="735" y="244">Dynamic scheduling</text>
+  <text class="tiny" x="735" y="292">Workers request work until all tasks finish.</text>
+
+  <path class="arrow" d="M820 330 V385"/>
+
+  <rect class="worker" x="185" y="420" width="170" height="105"/>
+  <text class="label" x="222" y="456">Worker 1</text>
+  <text class="small" x="215" y="485">compute tile</text>
+
+  <rect class="worker" x="395" y="420" width="170" height="105"/>
+  <text class="label" x="432" y="456">Worker 2</text>
+  <text class="small" x="425" y="485">compute tile</text>
+
+  <rect class="worker" x="605" y="420" width="170" height="105"/>
+  <text class="label" x="642" y="456">Worker N</text>
+  <text class="small" x="635" y="485">compute tile</text>
+
+  <path class="arrow" d="M750 405 C660 360 420 360 270 410"/>
+  <path class="arrow" d="M810 405 C720 370 575 370 480 410"/>
+  <path class="arrow" d="M870 405 C835 380 760 380 690 410"/>
+
+  <path class="arrow" d="M355 472 H450"/>
+  <path class="arrow" d="M565 472 H660"/>
+  <path class="arrow" d="M775 472 H855"/>
+
+  <rect class="output" x="865" y="405" width="230" height="140"/>
+  <text class="label" x="905" y="442">Output Buffer</text>
+  <text class="small" x="905" y="469">int[] pixel values</text>
+  <text class="small" x="905" y="496">disjoint writes</text>
+  <text class="tiny" x="905" y="526">No locks are needed for pixels.</text>
+</svg>
