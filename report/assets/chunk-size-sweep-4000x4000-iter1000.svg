@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="620" viewBox="0 0 1100 620" role="img" aria-labelledby="title desc">
+  <title id="title">Chunk-size sweep for dynamic Mandelbrot renderer</title>
+  <desc id="desc">Bar chart of average execution time for tile sizes 16, 32, 64, 128, and 256 on the 4000 by 4000 maxIter 1000 workload using 8 threads.</desc>
+  <defs>
+    <style>
+      .bg { fill: #ffffff; }
+      .axis { stroke: #263241; stroke-width: 2; }
+      .grid { stroke: #d8dee8; stroke-width: 1; }
+      .bar { fill: #4f8fcf; }
+      .best { fill: #3c9a5f; }
+      .title { font: 700 26px Arial, sans-serif; fill: #17202c; }
+      .subtitle { font: 15px Arial, sans-serif; fill: #485568; }
+      .label { font: 15px Arial, sans-serif; fill: #263241; }
+      .small { font: 13px Arial, sans-serif; fill: #485568; }
+      .value { font: 700 13px Arial, sans-serif; fill: #17202c; }
+    </style>
+  </defs>
+
+  <rect class="bg" width="1100" height="620"/>
+  <text class="title" x="70" y="52">Chunk-Size Sweep: Dynamic Renderer</text>
+  <text class="subtitle" x="70" y="80">4000x4000, maxIter=1000, 8 threads, 3 repeats after 1 warm-up</text>
+
+  <line class="grid" x1="120" y1="420" x2="980" y2="420"/>
+  <line class="grid" x1="120" y1="340" x2="980" y2="340"/>
+  <line class="grid" x1="120" y1="260" x2="980" y2="260"/>
+  <line class="grid" x1="120" y1="180" x2="980" y2="180"/>
+  <line class="grid" x1="120" y1="100" x2="980" y2="100"/>
+
+  <line class="axis" x1="120" y1="500" x2="980" y2="500"/>
+  <line class="axis" x1="120" y1="100" x2="120" y2="500"/>
+
+  <text class="small" x="69" y="505">0</text>
+  <text class="small" x="45" y="425">1000</text>
+  <text class="small" x="45" y="345">2000</text>
+  <text class="small" x="45" y="265">3000</text>
+  <text class="small" x="45" y="185">4000</text>
+  <text class="small" x="45" y="105">5000</text>
+
+  <text class="label" x="472" y="585">Tile size</text>
+  <text class="label" x="22" y="305" transform="rotate(-90 22 305)">Average time (ms)</text>
+
+  <rect class="bar" x="190" y="151.4" width="95" height="348.6"/>
+  <text class="value" x="202" y="139">4357.135</text>
+  <text class="label" x="218" y="532">16x16</text>
+
+  <rect class="bar" x="350" y="401.0" width="95" height="99.0"/>
+  <text class="value" x="363" y="389">1237.027</text>
+  <text class="label" x="378" y="532">32x32</text>
+
+  <rect class="best" x="510" y="407.1" width="95" height="92.9"/>
+  <text class="value" x="524" y="395">1161.253</text>
+  <text class="label" x="538" y="532">64x64</text>
+
+  <rect class="bar" x="670" y="405.2" width="95" height="94.8"/>
+  <text class="value" x="684" y="393">1185.322</text>
+  <text class="label" x="694" y="532">128x128</text>
+
+  <rect class="bar" x="830" y="404.5" width="95" height="95.5"/>
+  <text class="value" x="844" y="392">1194.133</text>
+  <text class="label" x="854" y="532">256x256</text>
+
+  <rect x="750" y="45" width="20" height="20" fill="#3c9a5f"/>
+  <text class="small" x="780" y="61">Best measured average: 64x64</text>
+</svg>

@@ -37,7 +37,12 @@ The largest benchmark case is 4000x4000 resolution with 1000 maximum iterations.
 ## Additional Artifacts Added Later
 
 - Example Mandelbrot image: `report/assets/mandelbrot-sample.png`
+- Report-ready example Mandelbrot image: `report/assets/sample-mandelbrot.png`
+- Report-ready dynamic scheduling diagram: `report/assets/dynamic-scheduling-architecture.png`
 - Dynamic scheduling architecture diagram: `report/assets/dynamic-task-scheduling.svg`
 - Mermaid source for the diagram: `report/assets/dynamic-task-scheduling.mmd`
 - Tile-size sweep data: `report/data/m3-tile-size-sweep.csv`
 - Tile-size sweep graph: `report/assets/tile-size-sweep-2000x2000-iter1000.svg`
+- Full M3 benchmark with min/max/stddev: `report/data/m3-full-benchmark-with-stats.csv`
+- Main chunk-size sweep data: `report/data/chunk-size-sweep.csv`
+- Main chunk-size sweep graph: `report/assets/chunk-size-sweep-4000x4000-iter1000.svg`
