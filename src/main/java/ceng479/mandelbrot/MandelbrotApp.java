@@ -53,9 +53,7 @@ public final class MandelbrotApp {
             iterations = renderer.render(config);
             end = System.nanoTime();
         } finally {
-            if (renderer instanceof ParallelMandelbrotRenderer) {
-                ((ParallelMandelbrotRenderer) renderer).close();
-            }
+            closeRenderer(renderer);
         }
 
         MandelbrotImageWriter.writePng(config, iterations, output);
@@ -95,10 +93,23 @@ public final class MandelbrotApp {
         if ("sequential".equalsIgnoreCase(mode)) {
             return new SequentialMandelbrotRenderer();
         }
-        if ("parallel".equalsIgnoreCase(mode)) {
+        if ("parallel".equalsIgnoreCase(mode)
+                || "dynamic".equalsIgnoreCase(mode)
+                || "dynamic-parallel".equalsIgnoreCase(mode)) {
             return new ParallelMandelbrotRenderer(threads);
         }
+        if ("static".equalsIgnoreCase(mode) || "static-parallel".equalsIgnoreCase(mode)) {
+            return new StaticParallelMandelbrotRenderer(threads);
+        }
         throw new IllegalArgumentException("Unknown render mode: " + mode);
+    }
+
+    private static void closeRenderer(MandelbrotRenderer renderer) {
+        if (renderer instanceof ParallelMandelbrotRenderer parallelRenderer) {
+            parallelRenderer.close();
+        } else if (renderer instanceof StaticParallelMandelbrotRenderer staticRenderer) {
+            staticRenderer.close();
+        }
     }
 
     private static int[] defaultThreadCounts() {
@@ -114,7 +125,8 @@ public final class MandelbrotApp {
         System.out.println();
         System.out.println("Commands:");
         System.out.println("  verify");
-        System.out.println("  render --mode=parallel --width=1920 --height=1080 --maxIter=1000 --threads=8 --tileSize=64 --output=results/images/parallel.png");
+        System.out.println("  render --mode=dynamic --width=1920 --height=1080 --maxIter=1000 --threads=8 --tileSize=64 --output=results/images/dynamic.png");
+        System.out.println("  render --mode=static --width=1920 --height=1080 --maxIter=1000 --threads=8 --tileSize=64 --output=results/images/static.png");
         System.out.println("  benchmark --preset=quick --threads=1,2,4,8 --repeats=3 --warmups=1 --tileSize=64");
         System.out.println("  graphs --input=latest --outputDir=results/graphs");
     }

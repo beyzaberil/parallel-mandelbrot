@@ -51,7 +51,7 @@ public final class MandelbrotGuiApp {
 
     private MandelbrotGuiApp() {
         frame = new JFrame("CENG-479 Mandelbrot Renderer");
-        modeCombo = new JComboBox<>(new String[]{"Parallel", "Sequential"});
+        modeCombo = new JComboBox<>(new String[]{"Dynamic Parallel", "Static Parallel", "Sequential"});
         widthSpinner = new JSpinner(new SpinnerNumberModel(1200, 200, 8000, 100));
         heightSpinner = new JSpinner(new SpinnerNumberModel(800, 200, 8000, 100));
         maxIterSpinner = new JSpinner(new SpinnerNumberModel(500, 50, 5000, 50));
@@ -171,18 +171,23 @@ public final class MandelbrotGuiApp {
 
     private void renderSelectedMode() {
         RenderSettings settings = readSettings();
-        boolean parallel = "Parallel".equals(modeCombo.getSelectedItem());
+        RenderMode mode = selectedRenderMode();
         runWorker("Rendering " + modeCombo.getSelectedItem() + "...", () -> {
-            RenderResult result = render(settings, parallel);
+            RenderResult result = render(settings, mode);
             return new DemoResult(result.image, result.elapsedMs, null);
         });
     }
 
     private void compareSequentialAndParallel() {
         RenderSettings settings = readSettings();
+        RenderMode comparisonMode = selectedRenderMode();
+        if (comparisonMode == RenderMode.SEQUENTIAL) {
+            comparisonMode = RenderMode.DYNAMIC;
+        }
+        RenderMode selectedComparisonMode = comparisonMode;
         runWorker("Comparing sequential and parallel...", () -> {
-            RenderResult sequential = render(settings, false);
-            RenderResult parallel = render(settings, true);
+            RenderResult sequential = render(settings, RenderMode.SEQUENTIAL);
+            RenderResult parallel = render(settings, selectedComparisonMode);
             double speedup = sequential.elapsedMs / parallel.elapsedMs;
             return new DemoResult(parallel.image, parallel.elapsedMs, speedup);
         });
@@ -227,16 +232,14 @@ public final class MandelbrotGuiApp {
         worker.execute();
     }
 
-    private RenderResult render(RenderSettings settings, boolean parallel) throws InterruptedException {
+    private RenderResult render(RenderSettings settings, RenderMode mode) throws InterruptedException {
         MandelbrotConfig config = MandelbrotConfig.standard(
                 settings.width,
                 settings.height,
                 settings.maxIterations,
                 settings.tileSize);
 
-        MandelbrotRenderer renderer = parallel
-                ? new ParallelMandelbrotRenderer(settings.threadCount)
-                : new SequentialMandelbrotRenderer();
+        MandelbrotRenderer renderer = rendererFor(mode, settings.threadCount);
 
         long start;
         long end;
@@ -246,14 +249,39 @@ public final class MandelbrotGuiApp {
             iterations = renderer.render(config);
             end = System.nanoTime();
         } finally {
-            if (renderer instanceof ParallelMandelbrotRenderer parallelRenderer) {
-                parallelRenderer.close();
-            }
+            closeRenderer(renderer);
         }
 
         return new RenderResult(
                 MandelbrotImageWriter.toBufferedImage(config, iterations),
                 (end - start) / 1_000_000.0);
+    }
+
+    private RenderMode selectedRenderMode() {
+        Object selected = modeCombo.getSelectedItem();
+        if ("Static Parallel".equals(selected)) {
+            return RenderMode.STATIC;
+        }
+        if ("Sequential".equals(selected)) {
+            return RenderMode.SEQUENTIAL;
+        }
+        return RenderMode.DYNAMIC;
+    }
+
+    private MandelbrotRenderer rendererFor(RenderMode mode, int threadCount) {
+        return switch (mode) {
+            case SEQUENTIAL -> new SequentialMandelbrotRenderer();
+            case STATIC -> new StaticParallelMandelbrotRenderer(threadCount);
+            case DYNAMIC -> new ParallelMandelbrotRenderer(threadCount);
+        };
+    }
+
+    private void closeRenderer(MandelbrotRenderer renderer) {
+        if (renderer instanceof ParallelMandelbrotRenderer parallelRenderer) {
+            parallelRenderer.close();
+        } else if (renderer instanceof StaticParallelMandelbrotRenderer staticRenderer) {
+            staticRenderer.close();
+        }
     }
 
     private RenderSettings readSettings() {
@@ -305,6 +333,12 @@ public final class MandelbrotGuiApp {
 
     private interface DemoTask {
         DemoResult run() throws Exception;
+    }
+
+    private enum RenderMode {
+        SEQUENTIAL,
+        STATIC,
+        DYNAMIC
     }
 
     private record RenderSettings(int width, int height, int maxIterations, int threadCount, int tileSize) {

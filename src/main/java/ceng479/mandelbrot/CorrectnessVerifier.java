@@ -10,29 +10,30 @@ public final class CorrectnessVerifier {
         MandelbrotConfig config = MandelbrotConfig.standard(900, 700, 500, 64);
         int cores = Runtime.getRuntime().availableProcessors();
         int[] sequential = new SequentialMandelbrotRenderer().render(config);
-
-        int[] dynamic;
-        try (ParallelMandelbrotRenderer renderer = new ParallelMandelbrotRenderer(cores)) {
-            dynamic = renderer.render(config);
+        int[] staticParallel;
+        try (StaticParallelMandelbrotRenderer renderer =
+                     new StaticParallelMandelbrotRenderer(Runtime.getRuntime().availableProcessors())) {
+            staticParallel = renderer.render(config);
         }
-        checkEqual("sequential", "dynamic-parallel", sequential, dynamic);
-
-        int[] statik;
-        try (StaticMandelbrotRenderer renderer = new StaticMandelbrotRenderer(cores)) {
-            statik = renderer.render(config);
+        int[] parallel;
+        try (ParallelMandelbrotRenderer renderer =
+                     new ParallelMandelbrotRenderer(Runtime.getRuntime().availableProcessors())) {
+            parallel = renderer.render(config);
         }
-        checkEqual("sequential", "static-parallel", sequential, statik);
 
-        System.out.println("Correctness check passed: sequential, dynamic-parallel, and static-parallel outputs are identical.");
+        assertEqual(sequential, staticParallel, "static parallel");
+        assertEqual(sequential, parallel, "dynamic parallel");
+
+        System.out.println("Correctness check passed: sequential, static parallel, and dynamic parallel outputs are identical.");
     }
 
-    private static void checkEqual(String leftName, String rightName, int[] left, int[] right) {
-        if (!Arrays.equals(left, right)) {
-            int idx = firstMismatch(left, right);
+    private static void assertEqual(int[] sequential, int[] parallel, String mode) {
+        if (!Arrays.equals(sequential, parallel)) {
+            int mismatchIndex = firstMismatch(sequential, parallel);
             throw new IllegalStateException(
-                    leftName + " and " + rightName + " differ at index " + idx
-                            + ": " + leftName + "=" + left[idx]
-                            + ", " + rightName + "=" + right[idx]);
+                    "Sequential and " + mode + " outputs differ at index " + mismatchIndex
+                            + ": sequential=" + sequential[mismatchIndex]
+                            + ", parallel=" + parallel[mismatchIndex]);
         }
     }
 

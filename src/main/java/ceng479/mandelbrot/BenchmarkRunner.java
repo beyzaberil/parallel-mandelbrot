@@ -61,38 +61,77 @@ public final class BenchmarkRunner {
                     sequentialMs);
 
             for (int threadCount : threadCounts) {
-                double parallelMs;
-                try (ParallelMandelbrotRenderer renderer = new ParallelMandelbrotRenderer(threadCount)) {
-                    parallelMs = averageRenderTimeMs(renderer, config);
-                }
-                double speedup = sequentialMs / parallelMs;
-                double efficiency = speedup / threadCount;
-
-                results.add(new BenchmarkResult(
-                        preset,
-                        "parallel",
-                        config.getWidth(),
-                        config.getHeight(),
-                        config.getMaxIterations(),
+                benchmarkParallelMode(
+                        results,
+                        config,
+                        sequentialMs,
                         threadCount,
-                        tileSize,
-                        parallelMs,
-                        speedup,
-                        efficiency));
-
-                System.out.printf(Locale.US,
-                        "Parallel   %dx%d maxIter=%d threads=%d: %.3f ms, speedup=%.4f, efficiency=%.4f%n",
-                        config.getWidth(),
-                        config.getHeight(),
-                        config.getMaxIterations(),
+                        "static",
+                        new StaticParallelMandelbrotRenderer(threadCount));
+                benchmarkParallelMode(
+                        results,
+                        config,
+                        sequentialMs,
                         threadCount,
-                        parallelMs,
-                        speedup,
-                        efficiency);
+                        "dynamic",
+                        new ParallelMandelbrotRenderer(threadCount));
             }
         }
 
         return writeCsv(results);
+    }
+
+    private void benchmarkParallelMode(
+            List<BenchmarkResult> results,
+            MandelbrotConfig config,
+            double sequentialMs,
+            int threadCount,
+            String mode,
+            MandelbrotRenderer renderer) throws InterruptedException {
+        double parallelMs;
+        try {
+            parallelMs = averageRenderTimeMs(renderer, config);
+        } finally {
+            closeRenderer(renderer);
+        }
+
+        double speedup = sequentialMs / parallelMs;
+        double efficiency = speedup / threadCount;
+
+        results.add(new BenchmarkResult(
+                preset,
+                mode,
+                config.getWidth(),
+                config.getHeight(),
+                config.getMaxIterations(),
+                threadCount,
+                config.getTileSize(),
+                parallelMs,
+                speedup,
+                efficiency));
+
+        System.out.printf(Locale.US,
+                "%-9s %dx%d maxIter=%d threads=%d: %.3f ms, speedup=%.4f, efficiency=%.4f%n",
+                capitalize(mode),
+                config.getWidth(),
+                config.getHeight(),
+                config.getMaxIterations(),
+                threadCount,
+                parallelMs,
+                speedup,
+                efficiency);
+    }
+
+    private static void closeRenderer(MandelbrotRenderer renderer) {
+        if (renderer instanceof ParallelMandelbrotRenderer parallelRenderer) {
+            parallelRenderer.close();
+        } else if (renderer instanceof StaticParallelMandelbrotRenderer staticRenderer) {
+            staticRenderer.close();
+        }
+    }
+
+    private static String capitalize(String value) {
+        return value.substring(0, 1).toUpperCase(Locale.US) + value.substring(1);
     }
 
     private double averageRenderTimeMs(MandelbrotRenderer renderer, MandelbrotConfig config)

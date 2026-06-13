@@ -42,8 +42,8 @@ public final class BenchmarkGraphGenerator {
         List<String> outputs = new ArrayList<>();
 
         for (BenchmarkGroup group : groups.values()) {
-            group.parallelRecords.sort(Comparator.comparingInt(record -> record.threadCount));
-            if (group.sequentialRecord == null || group.parallelRecords.isEmpty()) {
+            group.comparisonRecords.sort(Comparator.comparingInt(record -> record.threadCount));
+            if (group.sequentialRecord == null || group.comparisonRecords.isEmpty()) {
                 continue;
             }
 
@@ -121,8 +121,8 @@ public final class BenchmarkGraphGenerator {
 
             if ("sequential".equalsIgnoreCase(record.mode)) {
                 group.sequentialRecord = record;
-            } else if ("parallel".equalsIgnoreCase(record.mode)) {
-                group.parallelRecords.add(record);
+            } else if (isComparisonMode(record.mode)) {
+                group.comparisonRecords.add(record.normalized());
             }
         }
         return groups;
@@ -130,16 +130,29 @@ public final class BenchmarkGraphGenerator {
 
     private static String drawExecutionTimeChart(BenchmarkGroup group, File outputFile) throws IOException {
         List<Series> series = new ArrayList<>();
-        series.add(new Series(
-                "Parallel time",
+        List<BenchmarkRecord> dynamicRecords = group.recordsFor("dynamic");
+        List<BenchmarkRecord> staticRecords = group.recordsFor("static");
+
+        if (!dynamicRecords.isEmpty()) {
+            series.add(new Series(
+                "Dynamic parallel",
                 new Color(41, 98, 255),
-                group.parallelRecords.stream()
+                dynamicRecords.stream()
                         .map(record -> new Point(record.threadCount, record.averageTimeMs))
                         .toList()));
+        }
+        if (!staticRecords.isEmpty()) {
+            series.add(new Series(
+                    "Static parallel",
+                    new Color(239, 108, 0),
+                    staticRecords.stream()
+                            .map(record -> new Point(record.threadCount, record.averageTimeMs))
+                            .toList()));
+        }
 
         List<Point> baseline = new ArrayList<>();
-        int minThread = group.parallelRecords.get(0).threadCount;
-        int maxThread = group.parallelRecords.get(group.parallelRecords.size() - 1).threadCount;
+        int minThread = group.minThreadCount();
+        int maxThread = group.maxThreadCount();
         baseline.add(new Point(minThread, group.sequentialRecord.averageTimeMs));
         baseline.add(new Point(maxThread, group.sequentialRecord.averageTimeMs));
         series.add(new Series("Sequential baseline", new Color(198, 40, 40), baseline, true));
@@ -157,17 +170,30 @@ public final class BenchmarkGraphGenerator {
 
     private static String drawSpeedupChart(BenchmarkGroup group, File outputFile) throws IOException {
         List<Series> series = new ArrayList<>();
-        series.add(new Series(
-                "Measured speedup",
+        List<BenchmarkRecord> dynamicRecords = group.recordsFor("dynamic");
+        List<BenchmarkRecord> staticRecords = group.recordsFor("static");
+
+        if (!dynamicRecords.isEmpty()) {
+            series.add(new Series(
+                "Dynamic speedup",
                 new Color(0, 121, 107),
-                group.parallelRecords.stream()
+                dynamicRecords.stream()
                         .map(record -> new Point(record.threadCount, record.speedup))
                         .toList()));
+        }
+        if (!staticRecords.isEmpty()) {
+            series.add(new Series(
+                    "Static speedup",
+                    new Color(239, 108, 0),
+                    staticRecords.stream()
+                            .map(record -> new Point(record.threadCount, record.speedup))
+                            .toList()));
+        }
         series.add(new Series(
                 "Ideal speedup",
                 new Color(117, 117, 117),
-                group.parallelRecords.stream()
-                        .map(record -> new Point(record.threadCount, record.threadCount))
+                group.threadCounts().stream()
+                        .map(threadCount -> new Point(threadCount, threadCount))
                         .toList(),
                 true));
 
@@ -184,16 +210,29 @@ public final class BenchmarkGraphGenerator {
 
     private static String drawEfficiencyChart(BenchmarkGroup group, File outputFile) throws IOException {
         List<Series> series = new ArrayList<>();
-        series.add(new Series(
-                "Measured efficiency",
+        List<BenchmarkRecord> dynamicRecords = group.recordsFor("dynamic");
+        List<BenchmarkRecord> staticRecords = group.recordsFor("static");
+
+        if (!dynamicRecords.isEmpty()) {
+            series.add(new Series(
+                "Dynamic efficiency",
                 new Color(123, 31, 162),
-                group.parallelRecords.stream()
+                dynamicRecords.stream()
                         .map(record -> new Point(record.threadCount, record.efficiency))
                         .toList()));
+        }
+        if (!staticRecords.isEmpty()) {
+            series.add(new Series(
+                    "Static efficiency",
+                    new Color(239, 108, 0),
+                    staticRecords.stream()
+                            .map(record -> new Point(record.threadCount, record.efficiency))
+                            .toList()));
+        }
 
         List<Point> ideal = new ArrayList<>();
-        int minThread = group.parallelRecords.get(0).threadCount;
-        int maxThread = group.parallelRecords.get(group.parallelRecords.size() - 1).threadCount;
+        int minThread = group.minThreadCount();
+        int maxThread = group.maxThreadCount();
         ideal.add(new Point(minThread, 1.0));
         ideal.add(new Point(maxThread, 1.0));
         series.add(new Series("Ideal efficiency", new Color(117, 117, 117), ideal, true));
@@ -207,6 +246,12 @@ public final class BenchmarkGraphGenerator {
                 false,
                 true);
         return outputFile.getPath();
+    }
+
+    private static boolean isComparisonMode(String mode) {
+        return "parallel".equalsIgnoreCase(mode)
+                || "dynamic".equalsIgnoreCase(mode)
+                || "static".equalsIgnoreCase(mode);
     }
 
     private static void drawChart(
@@ -402,7 +447,7 @@ public final class BenchmarkGraphGenerator {
     }
 
     private static void drawLegend(Graphics2D graphics, List<Series> series, int x, int y) {
-        int width = 235;
+        int width = 275;
         int height = 24 + series.size() * 28;
         graphics.setColor(new Color(255, 255, 255, 235));
         graphics.fillRoundRect(x, y, width, height, 8, 8);
@@ -449,7 +494,7 @@ public final class BenchmarkGraphGenerator {
         private final int height;
         private final int maxIterations;
         private BenchmarkRecord sequentialRecord;
-        private final List<BenchmarkRecord> parallelRecords = new ArrayList<>();
+        private final List<BenchmarkRecord> comparisonRecords = new ArrayList<>();
 
         private BenchmarkGroup(int width, int height, int maxIterations) {
             this.width = width;
@@ -463,6 +508,30 @@ public final class BenchmarkGraphGenerator {
 
         private String slug() {
             return width + "x" + height + "-iter" + maxIterations;
+        }
+
+        private List<BenchmarkRecord> recordsFor(String mode) {
+            return comparisonRecords.stream()
+                    .filter(record -> mode.equals(record.mode))
+                    .sorted(Comparator.comparingInt(record -> record.threadCount))
+                    .toList();
+        }
+
+        private List<Integer> threadCounts() {
+            return comparisonRecords.stream()
+                    .map(record -> record.threadCount)
+                    .distinct()
+                    .sorted()
+                    .toList();
+        }
+
+        private int minThreadCount() {
+            return threadCounts().get(0);
+        }
+
+        private int maxThreadCount() {
+            List<Integer> threadCounts = threadCounts();
+            return threadCounts.get(threadCounts.size() - 1);
         }
     }
 
@@ -506,6 +575,19 @@ public final class BenchmarkGraphGenerator {
                     decimal(values, columns, "averageTimeMs"),
                     decimal(values, columns, "speedup"),
                     decimal(values, columns, "efficiency"));
+        }
+
+        private BenchmarkRecord normalized() {
+            String normalizedMode = "parallel".equalsIgnoreCase(mode) ? "dynamic" : mode.toLowerCase(Locale.US);
+            return new BenchmarkRecord(
+                    normalizedMode,
+                    width,
+                    height,
+                    maxIterations,
+                    threadCount,
+                    averageTimeMs,
+                    speedup,
+                    efficiency);
         }
 
         private static String value(String[] values, Map<String, Integer> columns, String columnName) {
