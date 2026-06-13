@@ -1,7 +1,7 @@
 out/
 *.class
 
-
+results/
 
 .DS_Store
 .idea/

@@ -8,7 +8,6 @@ public final class CorrectnessVerifier {
 
     public static void verify() throws InterruptedException {
         MandelbrotConfig config = MandelbrotConfig.standard(900, 700, 500, 64);
-        int cores = Runtime.getRuntime().availableProcessors();
         int[] sequential = new SequentialMandelbrotRenderer().render(config);
         int[] staticParallel;
         try (StaticParallelMandelbrotRenderer renderer =

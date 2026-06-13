@@ -1,5 +1,7 @@
 # Static vs Dynamic Parallel Benchmark Summary - Apple M3
 
+For the teammate's Windows/Ryzen benchmark and the cross-platform comparison, see `report/windows-static-dynamic-summary.md` and `report/cross-platform-summary.md`.
+
 ## Purpose
 
 This benchmark compares two Java thread-based parallelization strategies for Mandelbrot set generation:
